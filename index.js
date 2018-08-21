@@ -392,6 +392,32 @@ module.exports = function (options) {
       });
   });
 
+  router.post('/media', (req, res, next) => {
+    if (req.query.q) {
+      return badRequest(res, 'Queries only supported with GET method', 405);
+    } else if (req.body.mp && req.body.mp.action) {
+      return badRequest(res, 'This endpoint does not yet support updates.', 501);
+    } else if (!req.body.type) {
+      return badRequest(res, 'Missing "h" value.');
+    }
+
+    const data = req.body;
+
+    Promise.resolve()
+      // This way the function doesn't have to return a Promise
+      .then(() => options.media_handler(data, req))
+      .then(result => {
+        if (!result || !result.url) {
+          return res.sendStatus(400);
+        } else {
+          return res.redirect(201, result.url);
+        }
+      })
+      .catch(err => {
+        next(new VError(err, 'Error in media handling'));
+      });
+  });  
+
   return router;
 };
 
