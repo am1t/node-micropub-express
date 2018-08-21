@@ -397,7 +397,7 @@ module.exports = function (options) {
       return badRequest(res, 'Queries only supported with GET method', 405);
     }
 
-    const data = req.files;
+    const data = req.body;
 
     if (!data) {
       return badRequest(res, 'Not finding any files');
