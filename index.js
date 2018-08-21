@@ -270,7 +270,7 @@ module.exports = function (options) {
   const storage = multer.memoryStorage();
   const upload = multer({ storage: storage });
 
-  router.use(upload.fields(['video', 'photo', 'audio', 'video[]', 'photo[]', 'audio[]'].map(type => ({ name: type }))));
+  router.use(upload.fields(['video', 'photo', 'audio', 'file', 'video[]', 'photo[]', 'audio[]'].map(type => ({ name: type }))));
 
   // Ensure the needed parts are there
   router.use((req, res, next) => {
