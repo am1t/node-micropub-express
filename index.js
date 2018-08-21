@@ -274,6 +274,7 @@ module.exports = function (options) {
 
   // Ensure the needed parts are there
   router.use((req, res, next) => {
+    logger.debug({ req: JSON.stringify(req) }, 'Received the complete request');
     logger.debug({ body: req.body }, 'Received a request');
 
     if (req.body) {
@@ -285,6 +286,7 @@ module.exports = function (options) {
     }
 
     if (req.files && Object.getOwnPropertyNames(req.files)[0]) {
+      logger.debug('Received files');
       req.body = processFiles(req.body, req.files, logger);
     }
 
