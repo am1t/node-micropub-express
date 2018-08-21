@@ -146,7 +146,7 @@ const processJSONencodedBody = function (body) {
 const processFiles = function (body, files, logger) {
   const allResults = {};
 
-  ['video', 'photo', 'audio'].forEach(type => {
+  ['video', 'photo', 'audio', 'file'].forEach(type => {
     const result = [];
 
     ([].concat(files[type] || [], files[type + '[]'] || [])).forEach(function (file) {
