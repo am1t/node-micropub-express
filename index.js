@@ -382,13 +382,18 @@ module.exports = function (options) {
       return badRequest(res, 'Queries only supported with GET method', 405);
     } else if (req.body.action !== undefined) {
       let mp_action_type = ['replace', 'add', 'delete'];
-      mp_action_type.forEach(action_type => {
-          if (action_type in data) {
-            if (!Array.isArray(data[action_type])) {
-              return badRequest(res, 'Invalid update request, operation is not an array');
+
+      for (let key in data) {
+        if(mp_action_type.indexOf(key) !== -1) {
+          for (let prop in key) {
+            if (['content', 'category'].indexOf(prop) !==-1) {
+              if (!Array.isArray(prop)) {
+                return badRequest(res, 'Invalid update request, operation is not an array');
+              }
             }
           }
-      });
+        }
+      }
     }
 
     if (!data.action && !data.properties) {
