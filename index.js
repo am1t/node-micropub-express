@@ -379,10 +379,16 @@ module.exports = function (options) {
   router.post('/', (req, res, next) => {
     if (req.query.q) {
       return badRequest(res, 'Queries only supported with GET method', 405);
-    } else if (req.body.mp && req.body.mp.action) {
-      return badRequest(res, 'This endpoint does not yet support updates.', 501);
-    } else if (!req.body.type) {
-      return badRequest(res, 'Missing "h" value.');
+    } else if (req.body.action !== undefined) {
+      let mp_action_type = ['replace', 'add', 'delete'];
+      let mp_document = req.body;
+      mp_action_type.forEach(action_type => {
+          if (action_type in mp_document) {
+            if (!Array.isArray(mp_document[action_type])) {
+              return badRequest(res, 'Invalid update request, operation is not an array');
+            }
+          }
+      });
     }
 
     const data = req.body;
