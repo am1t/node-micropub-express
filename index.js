@@ -129,8 +129,8 @@ const processJSONencodedBody = function (body) {
 
   for (let key in body) {
     const value = body[key];
-
-    if (reservedProperties.indexOf(key) !== -1 || ['properties', 'type'].indexOf(key) !== -1) {
+    const supportedTypes = ['properties', 'type', 'action', 'url', 'replace'];
+    if (reservedProperties.indexOf(key) !== -1 || supportedTypes.indexOf(key) !== -1) {
       result[key] = value;
     } else if (key.indexOf('mp-') === 0) {
       key = key.substr(3);
@@ -377,21 +377,19 @@ module.exports = function (options) {
   });
 
   router.post('/', (req, res, next) => {
+    const data = req.body;
     if (req.query.q) {
       return badRequest(res, 'Queries only supported with GET method', 405);
     } else if (req.body.action !== undefined) {
       let mp_action_type = ['replace', 'add', 'delete'];
-      let mp_document = req.body;
       mp_action_type.forEach(action_type => {
-          if (action_type in mp_document) {
-            if (!Array.isArray(mp_document[action_type])) {
+          if (action_type in data) {
+            if (!Array.isArray(data[action_type])) {
               return badRequest(res, 'Invalid update request, operation is not an array');
             }
           }
       });
     }
-
-    const data = req.body;
 
     if (!data.action && !data.properties) {
       return badRequest(res, 'Not finding any properties.');
