@@ -393,7 +393,7 @@ module.exports = function (options) {
 
     const data = req.body;
 
-    if (!data.properties) {
+    if (!data.action && !data.properties) {
       return badRequest(res, 'Not finding any properties.');
     }
 
