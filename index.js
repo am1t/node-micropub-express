@@ -43,6 +43,13 @@ const badRequest = function (res, reason, code) {
   });
 };
 
+const unauthRequest = function (res, reason, code, error_str) {
+  res.status(code || 400).json({
+    error: error_str,
+    error_description: reason
+  });
+};
+
 const normalizeUrl = function (url) {
   if (url.substr(-1) !== '/') {
     url += '/';
@@ -291,16 +298,23 @@ module.exports = function (options) {
     logger.debug({ body: req.body }, 'Processed a request');
 
     let token;
+    let unath_error_str;
 
     if (req.headers.authorization) {
       token = req.headers.authorization.trim().split(/\s+/)[1];
+      if(!token) {
+        unath_error_str = 'insufficient_scope';
+      }
+      
     } else if (!token && req.body && req.body.access_token) {
       token = req.body.access_token;
+    } else if (!token) {
+      unath_error_str = 'unauthorized';
     }
 
     if (!token) {
       logger.debug('Got a request with a missing token');
-      return badRequest(res, 'Missing "Authorization" header or body parameter.', 401);
+      return unauthRequest(res, 'Missing "Authorization" header or body parameter.', 401, unath_error_str);
     }
 
     Promise.resolve()
